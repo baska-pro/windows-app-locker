@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build / release
+build/
+dist/
+*.zip
+*.exe
+*.msi
+
+# Runtime / private data
+config.json
+config.tmp
+*.log
+*.lock
+*.corrupt-*.json
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
