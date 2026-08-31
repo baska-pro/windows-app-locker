@@ -50,16 +50,41 @@ git push -u origin main
 
 Open the **Actions** tab and wait for the `CI` workflow. It should validate required files, version consistency, Python syntax, dependencies, diagnostics, installer PowerShell syntax, repository hygiene, and credential hygiene.
 
-## 5. Check the repository page
+## 5. Add and verify screenshots
+
+Store public screenshots under:
+
+```text
+assets/screenshots/
+├─ dashboard.png
+├─ aplikasi.png
+├─ website.png
+├─ folder.png
+└─ health.png
+```
+
+Before committing screenshots, verify that they do **not** expose:
+
+- Telegram bot tokens;
+- PIN values;
+- private Chat IDs;
+- passwords or API keys;
+- personal file paths or account data that should remain private;
+- private messages, logs, or other credentials.
+
+The primary screenshots are rendered directly from `README.md` and `README.en.md`, so keep the filenames stable unless both READMEs are updated at the same time.
+
+## 6. Check the repository page
 
 Confirm:
 - README renders correctly;
+- the screenshot gallery loads without broken images;
 - CI badge becomes green;
 - LICENSE is present;
 - `VERSION` is `2.0.0`;
 - no config, log, token, Chat ID, or runtime file is tracked.
 
-## 6. Create the first tag
+## 7. Create the first tag
 
 After CI is green:
 
@@ -68,7 +93,7 @@ git tag -a v2.0.0 -m "Windows App Locker v2.0.0"
 git push origin v2.0.0
 ```
 
-## 7. Build a release package
+## 8. Build a release package
 
 On Windows:
 
@@ -78,7 +103,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build_release.ps1
 
 The output appears under `dist/`.
 
-## 8. Create GitHub Release
+## 9. Create GitHub Release
 
 Open **Releases → Draft a new release**:
 
@@ -89,7 +114,7 @@ Title: Windows App Locker v2.0.0
 
 Use `RELEASE_NOTES_v2.0.0.md` as the release description and attach the ZIP from `dist/`.
 
-## 9. Final verification
+## 10. Final verification
 
 Download the release ZIP on a clean Windows test account and run:
 
