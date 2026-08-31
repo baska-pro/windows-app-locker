@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest a safe improvement
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Use case
+      description: What problem should this feature solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the expected user-facing behavior.
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Safety scope
+      options:
+        - label: This request does not require arbitrary shell execution, keylogging, credential capture, remote screenshots, or stealth persistence.
+          required: true

@@ -1,0 +1,139 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: python-${{ matrix.python-version }}
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Show environment
+        shell: powershell
+        run: |
+          python --version
+          python -m pip --version
+          Write-Host "Ref: $env:GITHUB_REF"
+          Write-Host "Commit: $env:GITHUB_SHA"
+
+      - name: Validate release structure
+        run: python scripts/check_release.py
+
+      - name: Validate CLI version
+        shell: powershell
+        run: |
+          $expected = (Get-Content -LiteralPath VERSION -Raw).Trim()
+          $actual = (python windows_app_locker.py --version).Trim()
+          Write-Host "VERSION file: $expected"
+          Write-Host "Script:       $actual"
+          if ($expected -ne $actual) {
+              throw "Version mismatch: VERSION=$expected script=$actual"
+          }
+
+      - name: Validate tag version
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: powershell
+        run: |
+          $expected = (Get-Content -LiteralPath VERSION -Raw).Trim()
+          $tag = $env:GITHUB_REF_NAME
+          if ($tag -ne "v$expected") {
+              throw "Tag $tag does not match VERSION $expected"
+          }
+
+      - name: Python syntax
+        run: python -m py_compile windows_app_locker.py scripts/check_release.py
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --upgrade pip setuptools wheel
+          python -m pip install --disable-pip-version-check -r requirements.txt
+
+      - name: Dependency consistency
+        run: python -m pip check
+
+      - name: Doctor
+        run: python windows_app_locker.py --doctor
+
+      - name: PowerShell syntax
+        shell: powershell
+        run: |
+          $failed = $false
+          foreach ($file in @('install.ps1', 'uninstall.ps1', 'scripts/build_release.ps1')) {
+              $tokens = $null
+              $errors = $null
+              [System.Management.Automation.Language.Parser]::ParseFile(
+                  $file,
+                  [ref]$tokens,
+                  [ref]$errors
+              ) | Out-Null
+
+              if ($errors.Count -gt 0) {
+                  $errors | ForEach-Object {
+                      Write-Error ("{0}: line {1}: {2}" -f $file, $_.Extent.StartLineNumber, $_.Message)
+                  }
+                  $failed = $true
+              }
+          }
+
+          if ($failed) {
+              exit 1
+          }
+
+      - name: Runtime file hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-files | grep -E '(^|/)(__pycache__|config\.json|config\.tmp|app_locker\.log)(/|$)|\.py[co]$'; then
+            echo "Runtime/generated files must not be tracked." >&2
+            exit 1
+          fi
+
+      - name: CI summary
+        if: always()
+        shell: powershell
+        run: |
+          $version = (Get-Content -LiteralPath VERSION -Raw -ErrorAction SilentlyContinue).Trim()
+          if (-not $version) { $version = 'unknown' }
+          $short = $env:GITHUB_SHA.Substring(0, [Math]::Min(8, $env:GITHUB_SHA.Length))
+          @(
+              '## Windows App Locker CI',
+              '',
+              '| Check | Value |',
+              '|---|---|',
+              "| Version | ``$version`` |",
+              "| Python | ``$(python --version 2>&1)`` |",
+              "| Ref | ``$env:GITHUB_REF_NAME`` |",
+              "| Commit | ``$short`` |",
+              '',
+              'Validation completed.'
+          ) | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
