@@ -6,9 +6,29 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D4?style=flat-square)](#persyaratan)
 [![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?style=flat-square)](#persyaratan)
 
+> [English documentation](README.en.md)
+
 **Windows App Locker v2.0.0** adalah aplikasi pengunci aplikasi Windows level user dengan dashboard lokal, PIN, System Tray, autostart per-user, logging, serta kontrol Telegram yang dibatasi hanya untuk pemilik.
 
 > App Locker ini bukan pengganti AppLocker/WDAC/Group Policy Windows. Administrator Windows tetap dapat menghentikan proses atau mengubah konfigurasi sistem.
+
+## Screenshot
+
+<p align="center">
+  <img src="assets/screenshots/dashboard.png" width="49%" alt="Windows App Locker - dashboard">
+  <img src="assets/screenshots/aplikasi.png" width="49%" alt="Windows App Locker - aplikasi">
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/website.png" width="49%" alt="Windows App Locker - website">
+  <img src="assets/screenshots/folder.png" width="49%" alt="Windows App Locker - folder">
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/health.png" width="80%" alt="Windows App Locker - health">
+</p>
+
+> Screenshot disimpan di [`assets/screenshots/`](assets/screenshots/) dan tidak boleh menampilkan token Telegram, PIN, Chat ID privat, credential, atau data sensitif lain.
 
 ## Fitur
 
@@ -114,7 +134,13 @@ windows-app-locker/
 │  ├─ ISSUE_TEMPLATE/
 │  ├─ workflows/ci.yml
 │  └─ pull_request_template.md
-├─ assets/screenshots/
+├─ assets/
+│  └─ screenshots/
+│     ├─ dashboard.png
+│     ├─ aplikasi.png
+│     ├─ website.png
+│     ├─ folder.png
+│     └─ health.png
 ├─ docs/
 ├─ scripts/
 ├─ windows_app_locker.py
@@ -151,6 +177,7 @@ File runtime dan credential tidak boleh dimasukkan ke Git. `.gitignore` sudah di
 
 ## Dokumentasi
 
+- [English README](README.en.md)
 - [Instalasi](docs/INSTALLATION.md)
 - [Telegram](docs/TELEGRAM.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
