@@ -2,6 +2,13 @@
 
 All notable changes to Windows App Locker are documented here.
 
+## Unreleased
+
+### Documentation
+- Added the public screenshot gallery for dashboard, application, website, folder, and health views.
+- Added screenshot references to both Indonesian and English READMEs.
+- Added screenshot publishing/privacy checks to the GitHub publishing guide.
+
 ## 2.0.0 - 2026-08-31
 
 ### Added
